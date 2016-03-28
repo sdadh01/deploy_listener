@@ -1,0 +1,81 @@
+
+deploy_listener listens for a RESTful command and updates a file with the contents of 
+the path following a set prefix
+
+eg. if the prefix is /deploy then curl http://hostname/deploy/xxxxyyyy will populate
+the given release file with xxxxyyyy
+
+Run as non-root user with privileges to file only as there is only basic security 
+involved. Basic authentication can be added by setting use_auth and auth_key in the 
+config file. Then the AUTH_KEY header will need to be sent along with the request.
+In the example above setting use_auth to true and auth_key to 1234567890 the curl
+request becomes :
+
+curl -H "AUTH_KEY: 1234567890" http://localhost:2000/deploy/xxxxyyyy
+
+To add extra security either use iptables or put nginx in front and add SSL at
+that level.
+
+This listener should be used along with incron to listen to see if that file has 
+changed and launch a separate script if the file changes.
+
+An incrontab should look something like :
+
+/path/to/release/file IN_CLOSE_WRITE /usr/bin/chef-client >/dev/null
+
+A chef setup to use the above 
+
+metadata.rb must require incron from chef supermarket
+
+recipe snippet:
+  
+  incron_user "root" do
+    action :allow
+  end
+  
+  incron_d "release_file_changes" do
+    path "/path/to/release/file"
+    mask "IN_CLOSE_WRITE"
+    command "/usr/bin/chef-client >/dev/null"
+  end
+
+Usage :
+
+deploy_listener: Write deploy release value to file from HTTP request
+
+Usage: deploy_listener [options]
+
+Process options:
+    -d, --daemonize                  run daemonized in the background (default: false)
+    -p, --pid PIDFILE                the pid filename
+    -P, --port PORT                  port to listen on (default: 2000)
+    -l, --log LOGFILE                the log filename (default: /dev/null)
+    -r, --release_file RELEASE_FILE  filename for file containing release to deploy (default: .release)
+    -c, --config CONFIGFILE          filename for yaml containing config - config file overrides command line options
+	
+Ruby options:
+    -I, --include PATH               an additional $LOAD_PATH (may be used more than once)
+        --debug                      set $DEBUG to true
+        --warn                       enable warnings
+
+Common options:
+    -h, --help
+    -v, --version
+	
+Config YAML file example :
+
+use_auth: false
+auth_key: "1234567890"
+daemonize: true
+logfile: "log/deploy_listener.log"
+pidfile: ".pidfile"
+port: 2000
+releasefile: ".release"
+urlprefix: "/deploy"
+
+
+Install required gems using bundle install or globally 'gem install sinatra' from command line.
+
+
+
+

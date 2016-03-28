@@ -1,0 +1,8 @@
+use_auth: true
+auth_key: "1234567890"
+daemonize: true
+logfile: "log/deploy_listener.log"
+pidfile: ".pidfile"
+port: 2000
+releasefile: ".release"
+urlprefix: "/deploy"
