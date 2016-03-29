@@ -1,6 +1,7 @@
 use_auth: true
 auth_key: "1234567890"
 daemonize: true
+ipaddress: "0.0.0.0"
 logfile: "log/deploy_listener.log"
 pidfile: ".pidfile"
 port: 2000

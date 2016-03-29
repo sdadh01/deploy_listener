@@ -76,6 +76,4 @@ urlprefix: "/deploy"
 
 Install required gems using bundle install or globally 'gem install sinatra' from command line.
 
-
-
-
+git rev-parse production or look at github latest commit and get the FULL sha revision
