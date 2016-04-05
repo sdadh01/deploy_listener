@@ -30,12 +30,9 @@ class DeployListener < Sinatra::Base
   releasefile = File.expand_path(settings.releasefile)
   outputjson = File.expand_path(".splat.json")
   urlprefix = settings.urlprefix
-  github_deploy_branch = settings.github_deploy_branch
-  github_webhook = settings.github_urlprefix
-  github_secret_token = settings.github_secret_token
-  
+
   # basic token based authentication - could be improved
-  if settings.use_auth
+  if settings.use_basic_auth
     before do
       if env['HTTP_AUTH_KEY'] != settings.auth_key
         error 401
@@ -49,14 +46,24 @@ class DeployListener < Sinatra::Base
     "Updating revision to #{revision}\n"
   end
 
-  post github_webhook do
-    request.body.rewind
-    payload_body = request.body.read
-    verify_signature(payload_body,github_secret_token)
-    @payload = JSON.parse(params[:payload])
-    revision = @payload["head_commit"]["id"]
-    write_release(releasefile,revision) if @payload["ref"] == github_deploy_branch
-    "Updating revision to #{revision}\n"
+  if settings.use_github_webhook
+    github_deploy_branch = settings.github_deploy_branch
+    github_webhook = settings.github_urlprefix
+    github_secret_token = settings.github_secret_token
+  
+    post github_webhook do
+      request.body.rewind
+      payload_body = request.body.read
+      verify_signature(payload_body,github_secret_token)
+      @payload = JSON.parse(params[:payload])
+      revision = @payload["head_commit"]["id"]
+      if @payload["ref"] == github_deploy_branch
+        write_release(releasefile,revision)
+        "Updating deploy revision to #{revision}\n"
+      else
+        "NOT DEPLOYED: #{@payload["ref"]} is not deploy branch"
+      end
+    end
   end
   
   not_found do
