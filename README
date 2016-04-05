@@ -5,11 +5,25 @@ the path following a set prefix
 eg. if the prefix is /deploy then curl http://hostname/deploy/xxxxyyyy will populate
 the given release file with xxxxyyyy
 
+Usage :
+
+- Create a deploy_listener_config.yml file as described below
+- Copy config/unicorn.rb and modify as required
+- bundle install the gems
+- start unicorn using 'bundle exec unicorn -c ./config/unicorn.rb -E development -D' (change environment to production to prevent listening on TCP port)
+
+Config YAML file example :
+
+auth_key: "1234567890"
+use_auth: true
+releasefile: ".release"
+urlprefix: "/deploy"
+
 Run as non-root user with privileges to file only as there is only basic security 
 involved. Basic authentication can be added by setting use_auth and auth_key in the 
 config file. Then the AUTH_KEY header will need to be sent along with the request.
 In the example above setting use_auth to true and auth_key to 1234567890 the curl
-request becomes :
+example above becomes :
 
 curl -H "AUTH_KEY: 1234567890" http://localhost:2000/deploy/xxxxyyyy
 
@@ -38,42 +52,37 @@ recipe snippet:
     mask "IN_CLOSE_WRITE"
     command "/usr/bin/chef-client >/dev/null"
   end
+  
+The 'deploy' section of a chef-client run can then be done only if the release file has
+changed since the last current link was created by adding :
 
-Usage :
-
-deploy_listener: Write deploy release value to file from HTTP request
-
-Usage: deploy_listener [options]
-
-Process options:
-    -d, --daemonize                  run daemonized in the background (default: false)
-    -p, --pid PIDFILE                the pid filename
-    -P, --port PORT                  port to listen on (default: 2000)
-    -l, --log LOGFILE                the log filename (default: /dev/null)
-    -r, --release_file RELEASE_FILE  filename for file containing release to deploy (default: .release)
-    -c, --config CONFIGFILE          filename for yaml containing config - config file overrides command line options
-	
-Ruby options:
-    -I, --include PATH               an additional $LOAD_PATH (may be used more than once)
-        --debug                      set $DEBUG to true
-        --warn                       enable warnings
-
-Common options:
-    -h, --help
-    -v, --version
-	
-Config YAML file example :
-
-use_auth: false
-auth_key: "1234567890"
-daemonize: true
-logfile: "log/deploy_listener.log"
-pidfile: ".pidfile"
-port: 2000
-releasefile: ".release"
-urlprefix: "/deploy"
+only_if File.mtime(release_file) > File.mtime(currentlink)
 
 
-Install required gems using bundle install or globally 'gem install sinatra' from command line.
+It is suggested to use a template to create the config yaml and unicorn.rb files. 
+
+An example cookbook for deploy_listener can be found here (URL>>>)
 
 git rev-parse production or look at github latest commit and get the FULL sha revision
+
+
+Inbound Github Webhook
+
+Payload URL
+https://677acac1.ngrok.io/webhook/github
+
+Content type
+
+application/x-www-form-urlencoded
+
+Secret created at the command line using :
+
+ruby -rsecurerandom -e 'puts SecureRandom.hex(20)' 
+
+config file has :
+
+github_urlprefix: "/webhook/github"
+github_deploy_branch: "refs/heads/production"
+github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"
+
+

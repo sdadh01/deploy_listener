@@ -2,13 +2,12 @@ VERSION = "1.0.0"
 
 ################################################
 # Config file parsing
+require 'json'
 require 'sinatra/base'
 require 'sinatra/config_file'
 
-
 class DeployListener < Sinatra::Base
   register Sinatra::ConfigFile
-  
   config_file './config/deploy_listener_config.yml'
   
   ################################################
@@ -20,9 +19,20 @@ class DeployListener < Sinatra::Base
   end
 
   ################################################
+  # github signature verification
+  def verify_signature(payload_body,secret_token)
+    signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), secret_token, payload_body)
+    return halt 500, "Signatures didn't match!" unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
+  end
+
+  ################################################
   # Main
   releasefile = File.expand_path(settings.releasefile)
+  outputjson = File.expand_path(".splat.json")
   urlprefix = settings.urlprefix
+  github_deploy_branch = settings.github_deploy_branch
+  github_webhook = settings.github_urlprefix
+  github_secret_token = settings.github_secret_token
   
   # basic token based authentication - could be improved
   if settings.use_auth
@@ -36,6 +46,16 @@ class DeployListener < Sinatra::Base
   get "#{urlprefix}/:revision" do
     revision = params['revision']
     write_release(releasefile,revision)
+    "Updating revision to #{revision}\n"
+  end
+
+  post github_webhook do
+    request.body.rewind
+    payload_body = request.body.read
+    verify_signature(payload_body,github_secret_token)
+    @payload = JSON.parse(params[:payload])
+    revision = @payload["head_commit"]["id"]
+    write_release(releasefile,revision) if @payload["ref"] == github_deploy_branch
     "Updating revision to #{revision}\n"
   end
   

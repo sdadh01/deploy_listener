@@ -1,9 +1,7 @@
-use_auth: true
 auth_key: "1234567890"
-daemonize: true
-ipaddress: "0.0.0.0"
-logfile: "log/deploy_listener.log"
-pidfile: ".pidfile"
-port: 2000
+use_auth: false
 releasefile: ".release"
 urlprefix: "/deploy"
+github_urlprefix: "/webhook/github"
+github_deploy_branch: "refs/heads/testing"
+github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"

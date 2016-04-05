@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.8)
+    json (1.8.1)
     kgio (2.10.0)
     multi_json (1.11.2)
     rack (1.6.4)
@@ -31,6 +32,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  json
   sinatra
   sinatra-contrib
   unicorn
