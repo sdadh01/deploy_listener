@@ -6,5 +6,5 @@ auth_key: "1234567890"
 
 use_github_webhook: true
 github_urlprefix: "/webhook/github"
-github_deploy_branch: "refs/heads/testing"
+github_deploy_branch: "refs/heads/production"
 github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"

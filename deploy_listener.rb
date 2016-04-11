@@ -46,6 +46,7 @@ class DeployListener < Sinatra::Base
     "Updating revision to #{revision}\n"
   end
 
+  # github webhook (requires setup on github - see README)
   if settings.use_github_webhook
     github_deploy_branch = settings.github_deploy_branch
     github_webhook = settings.github_urlprefix
