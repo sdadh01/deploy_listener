@@ -8,3 +8,7 @@ use_github_webhook: true
 github_urlprefix: "/webhook/github"
 github_deploy_branch: "refs/heads/production"
 github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"
+
+use_gitlab_webhook: false
+gitlab_urlprefix: "/webhook/gitlab"
+gitlab_deploy_branch: "refs/heads/master"

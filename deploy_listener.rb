@@ -67,6 +67,29 @@ class DeployListener < Sinatra::Base
     end
   end
   
+  # gitlab webhook (requires setup on Gitlab - see README)
+  # - be aware that there is no security provided by 
+  #   Gitlab for connections -use at your own risk.
+  if settings.use_gitlab_webhook
+    gitlab_deploy_branch = settings.gitlab_deploy_branch
+    gitlab_webhook = settings.gitlab_urlprefix
+    #gitlab_secret_token = settings.gitlab_secret_token
+  
+    post gitlab_webhook do
+      request.body.rewind
+      payload_body = request.body.read
+      #verify_signature(payload_body,gitlab_secret_token)
+      @payload = JSON.parse(payload_body)
+      revision = @payload["after"]
+      if @payload["ref"] == gitlab_deploy_branch
+        write_release(releasefile,revision)
+        "Updating deploy revision to #{revision}\n"
+      else
+        "NOT DEPLOYED: #{@payload["ref"]} is not deploy branch"
+      end
+    end
+  end
+
   not_found do
     "404 Not Found\n"
   end

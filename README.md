@@ -114,3 +114,24 @@ github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"
 ```
 
 
+## Inbound Gitlab Webhook
+
+On Gitlab set up a webhook with the 'URL' set to the URL that deploy_listener is
+listening on. For example :
+
+```
+https://677acac1.ngrok.io/webhook/gitlab
+```
+
+Note that there is no security token available for a Gitlab webhook and so it is 
+recommended that deploy_listener is either set up with nginx only accepting from
+the Gitlab server IP address or iptables is used to provide some sort of security.
+
+
+The deploy_listener config file should then be set up to include the following snipit :
+
+```
+use_gitlab_webhook: true
+gitlab_urlprefix: "/webhook/gitlab"
+gitlab_deploy_branch: "refs/heads/production"
+```
