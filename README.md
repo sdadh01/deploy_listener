@@ -6,7 +6,7 @@ the path following a set prefix
 eg. if the prefix is /deploy then curl http://hostname/deploy/xxxxyyyy will populate
 the given release file with xxxxyyyy
 
-It can also be setup as a Github webhook in addition to the above to trigger a deploy
+It can also be setup as a Github or Gitlab webhook in addition to the above to trigger a deploy
 based on a commit to a given branch.
 
 deploy_listener is available as Open Source with no underlying support. Please fork and 
