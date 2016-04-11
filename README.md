@@ -1,16 +1,21 @@
 # Overview
+
 deploy_listener listens for a RESTful command and updates a file with the contents of 
 the path following a set prefix
 
 eg. if the prefix is /deploy then curl http://hostname/deploy/xxxxyyyy will populate
 the given release file with xxxxyyyy
 
+It can also be setup as a Github webhook in addition to the above to trigger a deploy
+based on a commit to a given branch.
+
 # Usage
 
 - Create a deploy_listener_config.yml file as described below
 - Copy config/unicorn.rb and modify as required
 - bundle install the gems
-- start unicorn using 'bundle exec unicorn -c ./config/unicorn.rb -E development -D' (change environment to production to prevent listening on TCP port)
+- start unicorn using 'bundle exec unicorn -c ./config/unicorn.rb -E development -D' (change environment to production to prevent listening on TCP port) 
+- Add nginx to the front end in production to proxy back to deploy_listener
 
 Config YAML file example :
 
