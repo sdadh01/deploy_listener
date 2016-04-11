@@ -9,6 +9,10 @@ the given release file with xxxxyyyy
 It can also be setup as a Github webhook in addition to the above to trigger a deploy
 based on a commit to a given branch.
 
+deploy_listener is available as Open Source with no underlying support. Please fork and 
+modify for your own use. Maintenance on this project will be ad hoc. I'll watch for pull requests 
+but can't guarantee a turn around time.
+
 # Usage
 
 - Create a deploy_listener_config.yml file as described below
@@ -80,7 +84,7 @@ git rev-parse production or look at github latest commit and get the FULL sha re
 
 ## Inbound Github Webhook
 
-On Githib set up a webhook with the 'Payload URL' set to the URL that deploy_listener is
+On Github set up a webhook with the 'Payload URL' set to the URL that deploy_listener is
 listening on. For example :
 
 ```
