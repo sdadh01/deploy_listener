@@ -13,6 +13,9 @@ deploy_listener is available as Open Source with no underlying support. Please f
 modify for your own use. Maintenance on this project will be ad hoc. I'll watch for pull requests 
 but can't guarantee a turn around time.
 
+deploy_listener should run on any server supporting ruby. However, it has only been tested on
+Linux (Ubuntu, RHEL and CentOS).
+
 # Usage
 
 - Create a deploy_listener_config.yml file as described below
@@ -116,17 +119,17 @@ github_secret_token: "8e897bdf9ed3e1d84a2efe57b02e1fa1ffaab509"
 
 ## Inbound Gitlab Webhook
 
+Note: There is no security token available for a Gitlab webhook at time of writing and so it is 
+recommended that deploy_listener is either set up with nginx only accepting requests from
+the Gitlab server IP address or iptables is used to provide some sort of security. Without security 
+setup please use this feature at your own risk.
+
 On Gitlab set up a webhook with the 'URL' set to the URL that deploy_listener is
 listening on. For example :
 
 ```
 https://677acac1.ngrok.io/webhook/gitlab
 ```
-
-Note that there is no security token available for a Gitlab webhook and so it is 
-recommended that deploy_listener is either set up with nginx only accepting from
-the Gitlab server IP address or iptables is used to provide some sort of security.
-
 
 The deploy_listener config file should then be set up to include the following snipit :
 
