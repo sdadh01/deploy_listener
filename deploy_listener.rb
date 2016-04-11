@@ -73,12 +73,10 @@ class DeployListener < Sinatra::Base
   if settings.use_gitlab_webhook
     gitlab_deploy_branch = settings.gitlab_deploy_branch
     gitlab_webhook = settings.gitlab_urlprefix
-    #gitlab_secret_token = settings.gitlab_secret_token
   
     post gitlab_webhook do
       request.body.rewind
       payload_body = request.body.read
-      #verify_signature(payload_body,gitlab_secret_token)
       @payload = JSON.parse(payload_body)
       revision = @payload["after"]
       if @payload["ref"] == gitlab_deploy_branch
